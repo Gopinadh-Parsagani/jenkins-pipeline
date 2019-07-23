@@ -1,0 +1,12 @@
+node{
+ parallel firstBranch: {
+        stage('one'){
+           git url: 'git@github.com:parsaganigopi/VProfile.git', branch: 'master' 
+        }
+    }, secondBranch: {
+       stage('Two'){
+           git url: 'git@github.com:parsaganigopi/VProfile.git', branch: 'feature-1'  
+       }
+    },
+    failFast: true
+}
