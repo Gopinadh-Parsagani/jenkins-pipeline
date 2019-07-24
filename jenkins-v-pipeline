@@ -1,0 +1,45 @@
+node {
+    stage('scm checkopt'){
+    git 'https://github.com/wkhanvisualpathit/VProfile.git'
+}
+    stage('compile-install'){
+        sh 'mvn install'
+    }
+      stage('Archiving'){
+      archive '**/*.war'
+   }
+   stage('war-nexus'){
+       nexusArtifactUploader artifacts: [[artifactId: '$BUILD_TIMESTAMP', 
+       classifier: 'vprofile', 
+       file: 'target/vprofile-v1.war', 
+       type: 'war']], 
+       credentialsId: 'b972406a-066e-42ac-adaf-c718e98bd49e', 
+       groupId: 'Dev', 
+       nexusUrl: '172.31.94.238:8081/nexus', 
+       nexusVersion: 'nexus2', 
+       protocol: 'http', 
+       repository: 'vprofile-repo', 
+       version: '$BUILD_ID'
+       mail bcc: '', 
+       body: 'vprofile to nexus testing', 
+       cc: '', from: '', 
+       replyTo: '', 
+       subject: 'jenkins pipe line email testing', 
+       to: 'gopinadh243p@gmail.com'
+   }
+   stage('Email Notifications'){
+       mail bcc: '', 
+       body: 'hii this is jenkins pipeline email testing', 
+       cc: '', 
+       from: '', 
+       replyTo: '', 
+       subject: 'jenkins pipe line email testing', 
+       to: 'gopinadh243p@gmail.com'
+   }
+    stage('Deploy to Tomcat'){
+      
+    sshagent(['tomcat1st']) {
+         sh 'scp -o StrictHostKeyChecking=no target/*.war ubuntu@172.31.94.238:/home/ubuntu/apache-tomcat-8.5.43/webapps'
+      }
+   }
+}
